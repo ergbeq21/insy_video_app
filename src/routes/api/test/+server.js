@@ -1,12 +1,12 @@
-import clientPromise from '$lib/server/mongo';
+import dbPromise from '$lib/server/mongo';
 import { json } from '@sveltejs/kit';
 
 export async function GET() {
   try {
-    const client = await clientPromise;
-    const db = client.db();
+    const db = await dbPromise;
+    const videos = db.collection("videos");
 
-    await db.command({ ping: 1 });
+    await videos.insertOne({title: "Test2", url: "https://test.com"});
 
     return json({ message: 'MongoDB connected successfully!' });
   } catch (error) {

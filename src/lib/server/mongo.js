@@ -9,15 +9,15 @@ const client = new MongoClient(MONGODB_URI, {
   }
 });
 
-let clientPromise;
+let dbPromise;
 
 if (process.env.NODE_ENV === 'development') {
-  if (!global._mongoClientPromise) {
-    global._mongoClientPromise = client.connect();
+  if (!global._mongoDbPromise) {
+    global._mongoDbPromise = client.connect().then(client => client.db("myVideoApp"));
   }
-  clientPromise = global._mongoClientPromise;
+  dbPromise = global._mongoDbPromise;
 } else {
-  clientPromise = client.connect();
+  dbPromise = client.connect().then(client => client.db("myVideoApp"));
 }
 
-export default clientPromise;
+export default dbPromise;
