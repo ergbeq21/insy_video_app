@@ -10,7 +10,7 @@
 <ul>
     {#each playlists as playlist}
         <li>
-            <a href={`/playlist/${playlist.id}`} class="text-blue-500 hover:underline">
+            <a href={`/home/${playlist._id}`} class="text-blue-500 hover:underline">
                 {playlist.name} 
             </a>
         </li>

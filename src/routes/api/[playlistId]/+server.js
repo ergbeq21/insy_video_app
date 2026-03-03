@@ -2,7 +2,7 @@ import dbPromise from '$lib/server/mongo';
 import { ObjectId } from 'mongodb';
 
 export const GET = async ({ params }) => {
-    const { playlists: id } = params;
+    const { playlistId: id } = params;
 
     const db = await dbPromise;
     const playlists = db.collection("playlists");
