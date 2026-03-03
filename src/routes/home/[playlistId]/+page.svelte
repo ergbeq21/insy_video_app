@@ -1,5 +1,5 @@
 <script>
-	import { Eye, Heart, ArrowUp, ArrowDown } from 'lucide-svelte';
+	import { Eye, Heart, ArrowUp, ArrowDown, ChevronLeft } from 'lucide-svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 
@@ -43,39 +43,50 @@
 </svelte:head>
 
 <div class="min-h-screen bg-zinc-950 text-zinc-300">
-	<header class="flex items-end justify-between border-b border-zinc-800 px-6 py-6">
-		<div class="flex items-end gap-3">
-			<h1
-				class="text-5xl leading-none tracking-widest text-white"
-				style="font-family: 'Bebas Neue'"
-			>
-				Screen<span class="text-red-600">vault</span>
-			</h1>
-			<span class="pb-1 text-xs tracking-widest text-zinc-600 uppercase">
-				{data.videos.length} videos
-			</span>
-		</div>
+	<header class="flex flex-col border-b border-zinc-800 px-6 pt-4 pb-5">
+		<!-- Back link -->
+		<a
+			href="/home"
+			class="mb-4 flex w-fit items-center gap-1.5 text-[11px] uppercase tracking-widest text-zinc-600 transition-colors duration-150 hover:text-red-500"
+		>
+			<ChevronLeft size={13} />
+			All Playlists
+		</a>
 
-		<div class="flex items-center gap-2 pb-1">
-			{#each [{ key: 'views', icon: Eye }, { key: 'likes', icon: Heart }] as s}
-				<button
-					onclick={() => setSort(s.key)}
-					class="flex items-center gap-1.5 rounded px-3 py-1.5 text-xs transition-all duration-200
-                        {sortBy === s.key
-						? 'bg-red-600 text-white'
-						: 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white'}"
+		<!-- Title row -->
+		<div class="flex items-end justify-between">
+			<div class="flex items-end gap-3">
+				<h1
+					class="text-5xl leading-none tracking-widest text-white"
+					style="font-family: 'Bebas Neue'"
 				>
-					<s.icon size={11} />
-					{s.key.charAt(0).toUpperCase() + s.key.slice(1)}
-					{#if sortBy === s.key}
-						{#if asc}
-							<ArrowUp size={11} />
-						{:else}
-							<ArrowDown size={11} />
+					Screen<span class="text-red-600">vault</span>
+				</h1>
+				<span class="pb-1 text-xs tracking-widest text-zinc-600 uppercase">
+					{data.videos.length} videos
+				</span>
+			</div>
+			<div class="flex items-center gap-2">
+				{#each [{ key: 'views', icon: Eye }, { key: 'likes', icon: Heart }] as s}
+					<button
+						onclick={() => setSort(s.key)}
+						class="flex items-center gap-1.5 rounded px-3 py-1.5 text-xs transition-all duration-200
+                        {sortBy === s.key
+							? 'bg-red-600 text-white'
+							: 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white'}"
+					>
+						<s.icon size={11} />
+						{s.key.charAt(0).toUpperCase() + s.key.slice(1)}
+						{#if sortBy === s.key}
+							{#if asc}
+								<ArrowUp size={11} />
+							{:else}
+								<ArrowDown size={11} />
+							{/if}
 						{/if}
-					{/if}
-				</button>
-			{/each}
+					</button>
+				{/each}
+			</div>
 		</div>
 	</header>
 
