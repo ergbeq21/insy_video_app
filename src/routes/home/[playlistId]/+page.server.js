@@ -1,34 +1,42 @@
 import dbPromise from '$lib/server/mongo';
 import { ObjectId } from 'mongodb';
 
-export async function load({ params, fetch }) {
-    const { playlistId: id } = params;
+export async function load({ params, fetch, url }) {
+	const { playlistId: id } = params;
 
-    const response = await fetch(`/api/${id}`);
+	const response = await fetch(`/api/${id}`);
 
-    if (!response.ok) {
-        return { status: response.status, error: 'Playlist not found' };
-    }
+	if (!response.ok) {
+		return { status: response.status, error: 'Playlist not found' };
+	}
 
-    const playlist = await response.json();
+	const playlist = await response.json();
 
-    const db = await dbPromise;
-    const playlistVideoLinks = await db.collection("playlist_videos")
-        .find({ playlistId: new ObjectId(id) })
-        .toArray();
+	const db = await dbPromise;
 
-    const videoIds = playlistVideoLinks.map(link => new ObjectId(link.videoId));
+	const sortBy = url.searchParams.get('sortBy');
+	const asc = url.searchParams.get('asc') === 'true';
 
-    const videos = await db.collection("videos")
-        .find({ _id: { $in: videoIds } })
-        .toArray();
+	const sortField = sortBy === 'views' || sortBy === 'likes' ? sortBy : 'views';
+	const sortOrder = asc ? 1 : -1;
 
-    const serializedVideos = videos.map(video => ({
-        ...video,
-        _id: video._id.toString()
-    }));
+	const playlistVideoLinks = await db
+		.collection('playlist_videos')
+		.find({ playlistId: new ObjectId(id) })
+		.toArray();
 
-    return { playlist, videos: serializedVideos };
+	const videoIds = playlistVideoLinks.map((link) => new ObjectId(link.videoId));
+
+	const videos = await db
+		.collection('videos')
+		.find({ _id: { $in: videoIds } })
+		.sort({ [sortField]: sortOrder })
+		.toArray();
+
+	const serializedVideos = videos.map((video) => ({
+		...video,
+		_id: video._id.toString()
+	}));
+
+	return { playlist, videos: serializedVideos };
 }
-
-
