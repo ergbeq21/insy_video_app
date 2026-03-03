@@ -14,6 +14,8 @@ export async function load({ params, fetch, url }) {
 
 	const db = await dbPromise;
 
+    const search  = url.searchParams.get('q') ?? '';
+
 	const sortBy = url.searchParams.get('sortBy');
 	const asc = url.searchParams.get('asc') === 'true';
 
@@ -29,7 +31,8 @@ export async function load({ params, fetch, url }) {
 
 	const videos = await db
 		.collection('videos')
-		.find({ _id: { $in: videoIds } })
+		.find({ _id: { $in: videoIds, },
+        ...search ? { title: { $regex: search, $options: 'i' } } : {} })
 		.sort({ [sortField]: sortOrder })
 		.toArray();
 

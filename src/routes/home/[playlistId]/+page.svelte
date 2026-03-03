@@ -1,12 +1,26 @@
 <script>
-	import { Eye, Heart, ArrowUp, ArrowDown, ChevronLeft } from 'lucide-svelte';
+	import { Eye, Heart, ArrowUp, ArrowDown, ChevronLeft, Search } from 'lucide-svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 
 	let { data } = $props();
 
+    let search  = $derived(page.url.searchParams.get('q') ?? '');
+
 	let sortBy = $derived(page.url.searchParams.get('sortBy') ?? 'default');
 	let asc = $derived(page.url.searchParams.get('asc') === 'true');
+
+	function onSearch(e) {
+		const params = new URLSearchParams(page.url.searchParams);
+		const val = e.target.value.trim();
+
+        if (val) {
+            params.set('q', val);
+        } else {
+            params.delete('q');
+        }
+        goto(`?${params.toString()}`, { keepFocus: true, replaceState: true });
+    }
 
 	function setSort(key) {
 		const params = new URLSearchParams(page.url.searchParams);
@@ -66,7 +80,21 @@
 					{data.videos.length} videos
 				</span>
 			</div>
-			<div class="flex items-center gap-2">
+
+			<!-- Search + Sort -->
+			<div class="flex items-center gap-3 pb-1">
+				<div class="relative flex items-center">
+					<Search size={12} class="absolute left-3 text-zinc-500 pointer-events-none" />
+					<input
+						type="text"
+						value={search}
+						oninput={onSearch}
+						placeholder="Search videos…"
+						class="w-48 rounded bg-zinc-800 py-1.5 pl-8 pr-3 text-xs text-zinc-300 placeholder-zinc-600
+						       outline-none ring-1 ring-zinc-700 transition-all duration-200
+						       focus:ring-red-600 focus:text-white"
+					/>
+				</div>
 				{#each [{ key: 'views', icon: Eye }, { key: 'likes', icon: Heart }] as s}
 					<button
 						onclick={() => setSort(s.key)}
