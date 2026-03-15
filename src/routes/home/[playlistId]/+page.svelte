@@ -1,7 +1,9 @@
 <script>
 	import { Eye, Heart, ArrowUp, ArrowDown, ChevronLeft, Search } from 'lucide-svelte';
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
+	import { SvelteURLSearchParams } from 'svelte/reactivity';
 
 	let { data } = $props();
 
@@ -11,7 +13,7 @@
 	let asc = $derived(page.url.searchParams.get('asc') === 'true');
 
 	function onSearch(e) {
-		const params = new URLSearchParams(page.url.searchParams);
+		const params = new SvelteURLSearchParams(page.url.searchParams);
 		const val = e.target.value.trim();
 
         if (val) {
@@ -19,11 +21,11 @@
         } else {
             params.delete('q');
         }
-        goto(`?${params.toString()}`, { keepFocus: true, replaceState: true });
+        goto(resolve(`${page.url.pathname}?${params.toString()}`), { keepFocus: true, replaceState: true });
     }
 
 	function setSort(key) {
-		const params = new URLSearchParams(page.url.searchParams);
+		const params = new SvelteURLSearchParams(page.url.searchParams);
 
 		if (sortBy === key) {
 			params.set('asc', String(!asc));
@@ -32,7 +34,7 @@
 			params.set('asc', 'false');
 		}
 
-		goto(`?${params.toString()}`, { keepFocus: true });
+		goto(resolve(`${page.url.pathname}?${params.toString()}`), { keepFocus: true });
 	}
 
 	function toEmbedUrl(url) {
@@ -60,7 +62,7 @@
 	<header class="flex flex-col border-b border-zinc-800 px-6 pt-4 pb-5">
 		<!-- Back link -->
 		<a
-			href="/home"
+			href={resolve('/home')}
 			class="mb-4 flex w-fit items-center gap-1.5 text-[11px] uppercase tracking-widest text-zinc-600 transition-colors duration-150 hover:text-red-500"
 		>
 			<ChevronLeft size={13} />
@@ -95,7 +97,7 @@
 						       focus:ring-red-600 focus:text-white"
 					/>
 				</div>
-				{#each [{ key: 'views', icon: Eye }, { key: 'likes', icon: Heart }] as s}
+				{#each [{ key: 'views', icon: Eye }, { key: 'likes', icon: Heart }] as s (s.key)}
 					<button
 						onclick={() => setSort(s.key)}
 						class="flex items-center gap-1.5 rounded px-3 py-1.5 text-xs transition-all duration-200

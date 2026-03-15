@@ -1,5 +1,6 @@
 <script>
 	import { ListVideo, ChevronRight } from 'lucide-svelte';
+	import { resolve } from '$app/paths';
 
 	let { data } = $props();
 	let playlists = $derived(data.playlists);
@@ -31,7 +32,7 @@
 		<div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 			{#each playlists as playlist, i (playlist._id)}
 				<a
-					href={`/home/${playlist._id}`}
+					href={resolve(`/home/${playlist._id}`)}
 					class="group relative flex items-center gap-4 rounded bg-zinc-900 px-5 py-4
 					       border border-zinc-800 hover:border-red-600 hover:bg-zinc-800
 					       transition-all duration-200"
